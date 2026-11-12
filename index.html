@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ISS PULSE // Autonomous Orbit Watcher</title>
+  <title>ISS Live Tracker // International Space Station</title>
   
   <!-- Leaflet CSS -->
   <link
@@ -13,30 +13,32 @@
     crossorigin=""
   />
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter & Outfit for modern, friendly readability -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet"
   />
 
   <style>
     :root {
-      --bg-dark: #07090e;
-      --bg-panel: rgba(13, 19, 33, 0.78);
-      --bg-panel-hover: rgba(18, 26, 44, 0.88);
-      --border-hud: rgba(0, 240, 255, 0.22);
-      --border-hud-glow: rgba(0, 240, 255, 0.45);
-      --neon-cyan: #00f0ff;
-      --neon-emerald: #00ff88;
-      --neon-amber: #ffb800;
-      --neon-magenta: #ff0077;
-      --neon-violet: #8b5cf6;
-      --text-main: #e2e8f0;
-      --text-muted: #8492a6;
-      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-      --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --bg-body: #0a0e17;
+      --bg-card: rgba(19, 26, 42, 0.75);
+      --bg-card-hover: rgba(26, 36, 58, 0.9);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --accent-blue: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * {
@@ -46,693 +48,624 @@
     }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg-body);
       background-image: 
-        radial-gradient(ellipse at 15% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-      color: var(--text-main);
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 100% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-primary);
       font-family: var(--font-sans);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* Scrollbars */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(7, 9, 14, 0.8);
+      background: #0a0e17;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(0, 240, 255, 0.3);
-      border-radius: 3px;
+      background: #1e293b;
+      border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--neon-cyan);
+      background: #334155;
     }
 
     /* TOP NAVBAR */
     header {
-      background: rgba(7, 9, 14, 0.85);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border-hud);
-      padding: 0.9rem 1.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-card);
+      padding: 1rem 1.5rem;
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
-    .brand-section {
+    .nav-container {
+      max-width: 1300px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 1rem;
-    }
-
-    .brand-badge {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
-      border: 1px solid var(--neon-cyan);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
-    }
-
-    .brand-badge svg {
-      width: 24px;
-      height: 24px;
-      color: var(--neon-cyan);
-    }
-
-    .brand-title h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .brand-title h1 span.pulse-tag {
-      font-size: 0.68rem;
-      font-family: var(--font-mono);
-      background: rgba(0, 240, 255, 0.12);
-      color: var(--neon-cyan);
-      border: 1px solid var(--border-hud);
-      padding: 2px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.05em;
-    }
-
-    .brand-title p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
       flex-wrap: wrap;
     }
 
-    .heartbeat-badge {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+    }
+
+    .brand-icon svg {
+      width: 26px;
+      height: 26px;
+      color: #ffffff;
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-text p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .live-status {
       display: flex;
       align-items: center;
       gap: 0.55rem;
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      padding: 0.4rem 0.85rem;
-      border-radius: 20px;
-      background: rgba(0, 255, 136, 0.08);
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      color: var(--neon-emerald);
-      box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-emerald);
     }
 
-    .heartbeat-dot {
-      width: 8px;
-      height: 8px;
+    .live-dot {
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
-      background: var(--neon-emerald);
-      box-shadow: 0 0 8px var(--neon-emerald);
-      animation: pulse 1.8s infinite;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulse-ring 2s infinite;
     }
 
-    @keyframes pulse {
+    @keyframes pulse-ring {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.4; }
+      50% { transform: scale(1.3); opacity: 0.5; }
     }
 
-    .clock-chip {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--neon-cyan);
-      background: rgba(0, 240, 255, 0.06);
-      border: 1px solid var(--border-hud);
-      padding: 0.4rem 0.85rem;
-      border-radius: 8px;
-    }
-
-    /* ACTION BUTTONS */
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 0.45rem 0.9rem;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid var(--border-hud);
-      background: var(--bg-panel);
-      color: var(--text-main);
-      text-decoration: none;
-    }
-
-    .btn:hover {
-      background: var(--bg-panel-hover);
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(139, 92, 246, 0.18));
-      border-color: var(--neon-cyan);
-      color: var(--neon-cyan);
-    }
-
-    .btn-active {
-      background: rgba(0, 255, 136, 0.15);
-      border-color: var(--neon-emerald);
-      color: var(--neon-emerald);
-    }
-
-    /* MAIN CONTENT LAYOUT */
+    /* MAIN CONTAINER */
     main {
-      padding: 1.4rem 1.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-      flex: 1;
-      max-width: 1750px;
+      max-width: 1300px;
       margin: 0 auto;
+      padding: 1.8rem 1.5rem 3rem;
       width: 100%;
-    }
-
-    /* TELEMETRY CARDS GRID */
-    .telemetry-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 1rem;
-    }
-
-    .card {
-      background: var(--bg-panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-hud);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s ease;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-
-    .card:hover {
-      border-color: var(--border-hud-glow);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.12);
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-label {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .card-icon {
-      color: var(--neon-cyan);
-      opacity: 0.85;
-    }
-
-    .card-val {
-      font-family: var(--font-mono);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .card-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--font-mono);
-    }
-
-    .card-sub .badge {
-      display: inline-block;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 0.68rem;
-      font-weight: 600;
-    }
-
-    .badge-cyan { background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); }
-    .badge-green { background: rgba(0, 255, 136, 0.15); color: var(--neon-emerald); }
-    .badge-amber { background: rgba(255, 184, 0, 0.15); color: var(--neon-amber); }
-    .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--neon-violet); }
-
-    /* WORKSPACE: MAP & LOG PANEL */
-    .dashboard-workspace {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.4rem;
-      min-height: 580px;
-    }
-
-    @media (max-width: 1100px) {
-      .dashboard-workspace {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* MAP CONTAINER */
-    .map-wrapper {
-      background: var(--bg-panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-hud);
-      border-radius: 14px;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
-      position: relative;
+      gap: 1.8rem;
     }
 
-    .map-header {
-      padding: 0.75rem 1.2rem;
-      background: rgba(7, 9, 14, 0.8);
-      border-bottom: 1px solid var(--border-hud);
+    /* HERO LIVE LOCATION BANNER */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 1.6rem 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.7rem;
-    }
-
-    .map-title {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      letter-spacing: 0.05em;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .map-actions {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    #iss-map {
-      width: 100%;
-      height: 520px;
-      flex: 1;
-      background: #090d16;
-    }
-
-    /* MAP RADAR OVERLAY STYLING */
-    .leaflet-container {
-      background-color: #080b11 !important;
-    }
-    
-    .iss-marker-container {
+      gap: 1.4rem;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
     }
 
-    .iss-beacon {
+    .hero-banner::before {
+      content: '';
       position: absolute;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(0, 240, 255, 0.25);
-      border: 1px solid var(--neon-cyan);
-      animation: iss-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+      pointer-events: none;
     }
 
-    .iss-beacon-outer {
-      position: absolute;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 1px dashed rgba(0, 240, 255, 0.35);
-      animation: rotate-radar 12s linear infinite;
-    }
-
-    @keyframes iss-ping {
-      0% { transform: scale(0.6); opacity: 1; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    @keyframes rotate-radar {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .iss-icon-core {
-      position: relative;
-      z-index: 10;
-      filter: drop-shadow(0 0 8px var(--neon-cyan));
-    }
-
-    /* RIGHT COLUMN: AGENT FEED & LOOP ENGINE */
-    .agent-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .agent-box {
-      background: var(--bg-panel);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-hud);
-      border-radius: 14px;
-      padding: 1.1rem;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .agent-box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 0.7rem;
-      margin-bottom: 0.9rem;
-    }
-
-    .agent-box-title {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--neon-cyan);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* TERMINAL STREAM */
-    .terminal-window {
-      background: rgba(4, 6, 10, 0.92);
-      border: 1px solid rgba(0, 240, 255, 0.15);
-      border-radius: 8px;
-      padding: 0.9rem;
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      line-height: 1.6;
-      color: #94a3b8;
-      height: 320px;
-      overflow-y: auto;
+    .hero-info {
       display: flex;
       flex-direction: column;
       gap: 0.35rem;
     }
 
-    .log-line {
-      display: flex;
-      gap: 0.5rem;
-      word-break: break-word;
-      animation: fadeIn 0.2s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(3px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .log-time {
-      color: var(--neon-cyan);
-      flex-shrink: 0;
-    }
-    .log-cycle {
-      color: var(--neon-violet);
-      flex-shrink: 0;
-    }
-    .log-text {
-      color: #cbd5e1;
-    }
-    .log-highlight {
-      color: var(--neon-emerald);
+    .hero-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       font-weight: 600;
-    }
-    .log-warn {
-      color: var(--neon-amber);
-    }
-
-    /* AGENT CONTROLS */
-    .controls-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
-      margin-top: 0.8rem;
-    }
-
-    .selector-group {
+      color: var(--accent-blue);
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-hud);
-      border-radius: 6px;
-      padding: 0.3rem 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-muted);
+      gap: 0.5rem;
     }
 
-    .selector-group select {
-      background: transparent;
-      border: none;
-      color: var(--neon-cyan);
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      outline: none;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .selector-group select option {
-      background: #0d1321;
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
       color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
 
-    /* FOOTER */
-    footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 1.1rem 1.8rem;
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.65rem 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: 1px solid var(--border-card);
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--text-primary);
+    }
+
+    .btn:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+    }
+
+    /* 4 SIMPLE STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-card);
+      border-radius: 18px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .stat-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stat-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-blue { background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); }
+    .icon-emerald { background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald); }
+    .icon-purple { background: rgba(168, 85, 247, 0.12); color: var(--accent-purple); }
+    .icon-amber { background: rgba(245, 158, 11, 0.12); color: var(--accent-amber); }
+
+    .stat-val {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .stat-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .stat-desc strong {
+      color: var(--text-secondary);
+    }
+
+    /* MAP SECTION */
+    .map-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .map-header {
+      padding: 1.1rem 1.6rem;
+      border-bottom: 1px solid var(--border-card);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 1rem;
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .map-header-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .map-controls-group {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    #map-view {
+      width: 100%;
+      height: 520px;
+      background: #0b0f19;
+    }
+
+    /* CUSTOM SATELLITE MARKER */
+    .iss-pin {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iss-ring {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.2);
+      border: 2px solid var(--accent-blue);
+      animation: ping-wave 2s infinite cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    @keyframes ping-wave {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .iss-badge-icon {
+      position: relative;
+      z-index: 10;
+      background: #0f172a;
+      border: 2px solid #38bdf8;
+      border-radius: 50%;
+      padding: 6px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* EXPLAINER / FUN FACTS SECTION (NON-TECHNICAL) */
+    .facts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.4rem;
+    }
+
+    .fact-card {
+      background: rgba(20, 27, 45, 0.55);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.4rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .fact-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .fact-content h4 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.3rem;
+    }
+
+    .fact-content p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* COLLAPSIBLE TECHNICAL SECTION */
+    .details-toggle {
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 0.9rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .details-toggle:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .tech-panel {
+      display: none;
+      background: rgba(12, 17, 29, 0.85);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.4rem;
+      margin-top: 0.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
       font-family: var(--font-mono);
-      font-size: 0.74rem;
+      font-size: 0.8rem;
+    }
+
+    .tech-panel.open {
+      display: grid;
+    }
+
+    .tech-item span {
+      display: block;
       color: var(--text-muted);
-      background: rgba(7, 9, 14, 0.8);
+      font-size: 0.72rem;
+      margin-bottom: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tech-item p {
+      color: var(--accent-blue);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border-card);
+      padding: 1.6rem 1.5rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      background: rgba(10, 14, 23, 0.95);
     }
 
     footer a {
-      color: var(--neon-cyan);
+      color: var(--accent-blue);
       text-decoration: none;
-      transition: color 0.2s ease;
     }
 
     footer a:hover {
-      color: #ffffff;
       text-decoration: underline;
     }
 
-    /* PROGRESS BAR */
-    .progress-track {
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-emerald));
-      transition: width 0.1s linear;
+    @media (max-width: 640px) {
+      .hero-title {
+        font-size: 1.5rem;
+      }
+      #map-view {
+        height: 380px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER NAVIGATION -->
+  <!-- TOP BAR -->
   <header>
-    <div class="brand-section">
-      <div class="brand-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="2"></circle>
-          <path d="M4.93 4.93a10 10 0 0 1 14.14 0"></path>
-          <path d="M7.76 7.76a6 6 0 0 1 8.48 0"></path>
-          <line x1="12" y1="2" x2="12" y2="4"></line>
-          <line x1="12" y1="20" x2="12" y2="22"></line>
-          <line x1="20" y1="12" x2="22" y2="12"></line>
-          <line x1="2" y1="12" x2="4" y2="12"></line>
-        </svg>
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>ISS Live Tracker</h1>
+          <p>Where are the astronauts right now?</p>
+        </div>
       </div>
-      <div class="brand-title">
-        <h1>
-          ISS PULSE 
-          <span class="pulse-tag">AGENTIC LOOP v2.4</span>
-        </h1>
-        <p>Autonomous Telemetry Tracker // NORAD ID 25544</p>
-      </div>
-    </div>
 
-    <div class="nav-controls">
-      <div class="heartbeat-badge" id="heartbeat-badge">
-        <div class="heartbeat-dot" id="heartbeat-dot"></div>
-        <span id="heartbeat-text">LOOP: ACTIVE</span>
+      <div class="live-status">
+        <div class="live-dot"></div>
+        <span id="status-text">Live Tracking (Updates every 3s)</span>
       </div>
-      <div class="clock-chip" id="utc-clock">00:00:00 UTC</div>
-      <button class="btn btn-primary" id="btn-recenter" title="Center map on ISS">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-        Recenter ISS
-      </button>
     </div>
   </header>
 
-  <!-- MAIN DASHBOARD CONTENT -->
+  <!-- MAIN BODY -->
   <main>
 
-    <!-- TOP TELEMETRY CARDS -->
-    <div class="telemetry-grid">
+    <!-- HERO LOCATION BANNER -->
+    <div class="hero-banner">
+      <div class="hero-info">
+        <div class="hero-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          Current Location Above Earth
+        </div>
+        <div class="hero-title" id="hero-location-name">Scanning Earth surface...</div>
+        <div class="hero-subtitle" id="hero-location-sub">Detecting current country or ocean in real time</div>
+      </div>
 
-      <!-- CARD 1: COORDINATES -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">
-            <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="btn-recenter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Center on Station
+        </button>
+        <button class="btn" id="btn-follow">
+          <span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span>
+          Auto-Follow: ON
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 EASY-TO-UNDERSTAND CARDS -->
+    <div class="stats-grid">
+
+      <!-- CARD 1: FLYING OVER -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Territory</span>
+          <div class="stat-icon icon-emerald">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            Subsatellite Point
-          </span>
-          <span class="badge badge-cyan" id="geo-bearing">GPS FIX</span>
+          </div>
         </div>
-        <div class="card-val" id="val-coords">--° , --°</div>
-        <div class="card-sub">
-          <span id="val-lat-dms">Lat: --</span> | <span id="val-lon-dms">Lon: --</span>
+        <div class="stat-val" id="card-territory" style="font-size: 1.35rem;">Locating...</div>
+        <div class="stat-desc">
+          <strong>Type: </strong><span id="card-surface-type">Analyzing land/ocean</span>
         </div>
       </div>
 
-      <!-- CARD 2: REVERSE GEO-LOCATION -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">
-            <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            Overflight Territory
-          </span>
-          <span class="badge badge-green" id="territory-badge">RESOLVING</span>
-        </div>
-        <div class="card-val" id="val-location" style="font-size: 1.15rem; line-height: 1.3;">Scanning earth surface...</div>
-        <div class="card-sub">
-          <span>Country / Region: </span><span id="val-country" style="color: var(--neon-emerald)">--</span>
-        </div>
-      </div>
-
-      <!-- CARD 3: VELOCITY -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">
-            <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- CARD 2: SPEED -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Travel Speed</span>
+          <div class="stat-icon icon-blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            Orbital Velocity
-          </span>
-          <span class="badge badge-purple" id="val-mach">~MACH 22.5</span>
+          </div>
         </div>
-        <div class="card-val" id="val-velocity">-- km/h</div>
-        <div class="card-sub">
-          <span id="val-velocity-mph">-- mph</span> &bull; <span id="val-velocity-kms">-- km/s</span>
+        <div class="stat-val" id="card-speed">-- km/h</div>
+        <div class="stat-desc">
+          Moves at <strong>~7.6 km per second</strong>. Completes a full loop around Earth in 90 minutes!
         </div>
       </div>
 
-      <!-- CARD 4: ALTITUDE -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">
-            <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 20V10"></path>
-              <path d="M12 20V4"></path>
-              <path d="M6 20v-6"></path>
+      <!-- CARD 3: HEIGHT -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Altitude in Space</span>
+          <div class="stat-icon icon-purple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
             </svg>
-            Altitude (LEO)
-          </span>
-          <span class="badge badge-amber" id="orbit-type">THERMOSPHERE</span>
+          </div>
         </div>
-        <div class="card-val" id="val-altitude">-- km</div>
-        <div class="card-sub">
-          <span id="val-footprint">Footprint: -- km</span>
+        <div class="stat-val" id="card-altitude">-- km</div>
+        <div class="stat-desc">
+          Orbiting about <strong>40 times higher</strong> than commercial passenger airplanes.
         </div>
       </div>
 
-      <!-- CARD 5: SOLAR / VISIBILITY -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-label">
-            <svg class="card-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- CARD 4: DAY OR NIGHT -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Astronauts' View</span>
+          <div class="stat-icon icon-amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -743,152 +676,102 @@
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            Solar Visibility
-          </span>
-          <span class="badge badge-cyan" id="solar-badge">SYNCING</span>
+          </div>
         </div>
-        <div class="card-val" id="val-visibility">--</div>
-        <div class="card-sub">
-          <span>Orbital Period: </span><span style="color: #fff">~92.8 min</span>
+        <div class="stat-val" id="card-daynight" style="font-size: 1.45rem;">--</div>
+        <div class="stat-desc" id="card-daynight-sub">
+          They experience <strong>16 sunrises & sunsets</strong> every 24 hours.
         </div>
       </div>
 
     </div>
 
-    <!-- WORKSPACE: MAP & TELEMETRY STREAM -->
-    <div class="dashboard-workspace">
-
-      <!-- MAP WRAPPER -->
-      <div class="map-wrapper">
-        <div class="map-header">
-          <div class="map-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2">
-              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-              <line x1="8" y1="2" x2="8" y2="18"></line>
-              <line x1="16" y1="6" x2="16" y2="22"></line>
-            </svg>
-            GLOBAL ORBITAL PROJECTION // REAL-TIME TRACKING
-          </div>
-          <div class="map-actions">
-            <button class="btn" id="btn-toggle-follow" title="Toggle automatic camera follow">
-              <span id="follow-status-dot" style="width: 7px; height: 7px; border-radius: 50%; background: var(--neon-emerald); display: inline-block;"></span>
-              Auto-Follow: ON
-            </button>
-            <button class="btn" id="btn-clear-trail" title="Clear trajectory history line">
-              Clear Trail
-            </button>
-          </div>
+    <!-- INTERACTIVE MAP -->
+    <div class="map-card">
+      <div class="map-header">
+        <div class="map-header-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Live World Map (Past Path & Current Position)
         </div>
+        <div class="map-controls-group">
+          <button class="btn" id="btn-clear-path">Clear Flight Trail</button>
+        </div>
+      </div>
+      <div id="map-view"></div>
+    </div>
 
-        <div id="iss-map"></div>
-
-        <div class="progress-track" title="Next Telemetry Polling Progress">
-          <div class="progress-fill" id="poll-progress-bar"></div>
+    <!-- FUN FACTS FOR NON-TECHNICAL USERS -->
+    <div class="facts-section">
+      <div class="fact-card">
+        <div class="fact-icon">👨‍🚀</div>
+        <div class="fact-content">
+          <h4>Who lives up there?</h4>
+          <p>Between 6 to 10 astronauts live and work aboard the ISS continuously, conducting scientific experiments for all humankind.</p>
         </div>
       </div>
 
-      <!-- AGENT TELEMETRY & FEED PANEL -->
-      <div class="agent-panel">
-
-        <!-- AGENTIC LOOP TERMINAL -->
-        <div class="agent-box" style="flex: 1;">
-          <div class="agent-box-header">
-            <div class="agent-box-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="4 17 10 11 4 5"></polyline>
-                <line x1="12" y1="19" x2="20" y2="19"></line>
-              </svg>
-              Autonomous Watcher Log
-            </div>
-            <button class="btn" id="btn-clear-logs" style="padding: 2px 7px; font-size: 0.68rem;">Clear</button>
-          </div>
-
-          <div class="terminal-window" id="terminal-feed">
-            <div class="log-line">
-              <span class="log-time">[BOOT]</span>
-              <span class="log-text">Initializing Agentic ISS Watch Loop Engine...</span>
-            </div>
-            <div class="log-line">
-              <span class="log-time">[BOOT]</span>
-              <span class="log-text">Connecting to WhereTheISS Telemetry Stream...</span>
-            </div>
-          </div>
-
-          <!-- CONTROLS -->
-          <div class="controls-grid">
-            <div class="selector-group">
-              <span>Interval:</span>
-              <select id="select-interval">
-                <option value="2000">2s (Live Turbo)</option>
-                <option value="5000" selected>5s (Recommended)</option>
-                <option value="10000">10s (Standard)</option>
-                <option value="30000">30s (Low Data)</option>
-                <option value="60000">60s (CLI Mode)</option>
-              </select>
-            </div>
-
-            <button class="btn btn-active" id="btn-toggle-loop">
-              <span id="loop-state-text">Pause Loop</span>
-            </button>
-
-            <button class="btn" id="btn-manual-poll">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 4 23 10 17 10"></polyline>
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-              </svg>
-              Force Ping
-            </button>
-
-            <button class="btn" id="btn-toggle-sound" title="Toggle telemetry audio beeps">
-              <span>Audio: OFF</span>
-            </button>
-          </div>
-
-          <div style="margin-top: 0.75rem;">
-            <button class="btn" id="btn-export-log" style="width: 100%; justify-content: center;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Export Session Logs (JSON)
-            </button>
-          </div>
+      <div class="fact-card">
+        <div class="fact-icon">⚽</div>
+        <div class="fact-content">
+          <h4>How big is the Station?</h4>
+          <p>It's about the size of a full American football field (109 meters end-to-end), weighing over 400,000 kilograms!</p>
         </div>
-
-        <!-- LOOP ENGINEERING SPECS CARD -->
-        <div class="agent-box">
-          <div class="agent-box-header">
-            <div class="agent-box-title" style="color: var(--neon-emerald)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="m9 12 2 2 4-4"></path>
-              </svg>
-              Loop Architecture
-            </div>
-            <span class="badge badge-green">CONCEPT 4</span>
-          </div>
-          <p style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; font-family: var(--font-mono);">
-            <strong>In-Session Heartbeat:</strong> Executes an unattended autonomous cycle with zero external dependencies. Reverse geocoding resolves overflight territory dynamically while keeping session state reactive.
-          </p>
-        </div>
-
       </div>
 
+      <div class="fact-card">
+        <div class="fact-icon">👀</div>
+        <div class="fact-content">
+          <h4>Can you see it from your home?</h4>
+          <p>Yes! It looks like a very bright, fast-moving star gliding across the night sky with no blinking lights.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIONAL TECHNICAL DETAILS ACCORDION -->
+    <div>
+      <button class="details-toggle" id="toggle-tech">
+        <span>⚙️ Show Technical Coordinates & GPS Telemetry</span>
+        <span id="tech-arrow">▼</span>
+      </button>
+
+      <div class="tech-panel" id="tech-panel">
+        <div class="tech-item">
+          <span>Exact Latitude</span>
+          <p id="tech-lat">--</p>
+        </div>
+        <div class="tech-item">
+          <span>Exact Longitude</span>
+          <p id="tech-lon">--</p>
+        </div>
+        <div class="tech-item">
+          <span>Speed (Miles/hr)</span>
+          <p id="tech-mph">--</p>
+        </div>
+        <div class="tech-item">
+          <span>Ground Footprint</span>
+          <p id="tech-footprint">--</p>
+        </div>
+        <div class="tech-item">
+          <span>NORAD Satellite ID</span>
+          <p>25544</p>
+        </div>
+        <div class="tech-item">
+          <span>Orbital Period</span>
+          <p>~92.8 Minutes</p>
+        </div>
+      </div>
     </div>
 
   </main>
 
   <!-- FOOTER -->
   <footer>
-    <div>
-      ISS WATCH LOOP // BUILT WITH AGENTIC AI ARCHITECTURE
-    </div>
-    <div>
-      APIs: <a href="https://wheretheiss.at/" target="_blank" rel="noopener">WhereTheISS</a> &bull; 
-      <a href="https://www.bigdatacloud.com/" target="_blank" rel="noopener">BigDataCloud</a> &bull; 
-      Map: <a href="https://carto.com/" target="_blank" rel="noopener">CartoDB Dark Matter</a>
-    </div>
+    <p>
+      International Space Station Live Tracker &bull; Powered by NASA / WhereTheISS &amp; BigDataCloud &bull; Built with modern Web Standards
+    </p>
   </footer>
 
   <!-- Leaflet JS -->
@@ -900,7 +783,7 @@
 
   <script>
     /* =========================================================
-       ISS PULSE - AUTONOMOUS AGENTIC TELEMETRY CONTROLLER
+       NON-TECHNICAL & INTUITIVE ISS CONTROLLER
        ========================================================= */
 
     const ISS_API = "https://api.wheretheiss.at/v1/satellites/25544";
@@ -909,95 +792,38 @@
       "https://api-bdc.io/data/reverse-geocode-client"
     ];
 
-    // State
-    let pollInterval = 5000;
-    let isLoopRunning = true;
+    let currentLat = 0;
+    let currentLon = 0;
     let autoFollow = true;
-    let audioEnabled = false;
-    let loopCycle = 0;
-    let timerId = null;
-    let progressTimerId = null;
-    let lastPollTime = Date.now();
-    let sessionLogs = [];
     const trailPoints = [];
 
     // DOM Elements
-    const elUtcClock = document.getElementById("utc-clock");
-    const elValCoords = document.getElementById("val-coords");
-    const elValLatDms = document.getElementById("val-lat-dms");
-    const elValLonDms = document.getElementById("val-lon-dms");
-    const elValLocation = document.getElementById("val-location");
-    const elValCountry = document.getElementById("val-country");
-    const elTerritoryBadge = document.getElementById("territory-badge");
-    const elValVelocity = document.getElementById("val-velocity");
-    const elValVelocityMph = document.getElementById("val-velocity-mph");
-    const elValVelocityKms = document.getElementById("val-velocity-kms");
-    const elValAltitude = document.getElementById("val-altitude");
-    const elValFootprint = document.getElementById("val-footprint");
-    const elValVisibility = document.getElementById("val-visibility");
-    const elSolarBadge = document.getElementById("solar-badge");
-    const elProgressBar = document.getElementById("poll-progress-bar");
-    const elTerminal = document.getElementById("terminal-feed");
-    const elHeartbeatText = document.getElementById("heartbeat-text");
-    const elHeartbeatDot = document.getElementById("heartbeat-dot");
-    const elHeartbeatBadge = document.getElementById("heartbeat-badge");
+    const heroLocationName = document.getElementById("hero-location-name");
+    const heroLocationSub = document.getElementById("hero-location-sub");
+    const cardTerritory = document.getElementById("card-territory");
+    const cardSurfaceType = document.getElementById("card-surface-type");
+    const cardSpeed = document.getElementById("card-speed");
+    const cardAltitude = document.getElementById("card-altitude");
+    const cardDayNight = document.getElementById("card-daynight");
+    const cardDayNightSub = document.getElementById("card-daynight-sub");
 
-    // Buttons
-    const btnToggleLoop = document.getElementById("btn-toggle-loop");
-    const btnManualPoll = document.getElementById("btn-manual-poll");
+    const techLat = document.getElementById("tech-lat");
+    const techLon = document.getElementById("tech-lon");
+    const techMph = document.getElementById("tech-mph");
+    const techFootprint = document.getElementById("tech-footprint");
+
     const btnRecenter = document.getElementById("btn-recenter");
-    const btnToggleFollow = document.getElementById("btn-toggle-follow");
-    const btnClearTrail = document.getElementById("btn-clear-trail");
-    const btnClearLogs = document.getElementById("btn-clear-logs");
-    const btnToggleSound = document.getElementById("btn-toggle-sound");
-    const btnExportLog = document.getElementById("btn-export-log");
-    const selectInterval = document.getElementById("select-interval");
+    const btnFollow = document.getElementById("btn-follow");
+    const followIndicator = document.getElementById("follow-indicator");
+    const btnClearPath = document.getElementById("btn-clear-path");
+    const toggleTech = document.getElementById("toggle-tech");
+    const techPanel = document.getElementById("tech-panel");
+    const techArrow = document.getElementById("tech-arrow");
 
     /* =========================================================
-       AUDIO SYNTHESIZER (Web Audio API)
+       MAP INITIALIZATION (Clean & Sleek Dark Map)
        ========================================================= */
-    let audioCtx = null;
-    function playSciFiChirp(freq = 880, duration = 0.08) {
-      if (!audioEnabled) return;
-      try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, audioCtx.currentTime + duration);
-
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {
-        console.warn("Audio chirp failed", e);
-      }
-    }
-
-    /* =========================================================
-       CLOCK
-       ========================================================= */
-    function updateClock() {
-      const now = new Date();
-      elUtcClock.textContent = now.toUTCString().replace("GMT", "UTC").split(" ").slice(4, 5)[0] + " UTC";
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    /* =========================================================
-       MAP INITIALIZATION (Leaflet + CartoDB Dark Matter)
-       ========================================================= */
-    const map = L.map("iss-map", {
+    const map = L.map("map-view", {
       center: [20, 0],
       zoom: 3,
       minZoom: 2,
@@ -1006,381 +832,197 @@
       zoomControl: true
     });
 
-    // Dark sleek map tiles
+    // Elegant CartoDB Dark Matter map
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap contributors',
+      attribution: '&copy; OpenStreetMap, CARTO',
       subdomains: "abcd",
       maxZoom: 19
     }).addTo(map);
 
-    // Custom ISS Icon with Pulsing Radar
-    const issIcon = L.divIcon({
-      className: "iss-custom-marker",
-      html: `
-        <div class="iss-marker-container">
-          <div class="iss-beacon"></div>
-          <div class="iss-beacon-outer"></div>
-          <svg class="iss-icon-core" width="34" height="34" viewBox="0 0 64 64" fill="none">
-            <!-- Central Module -->
-            <rect x="28" y="20" width="8" height="24" rx="3" fill="#00f0ff" stroke="#ffffff" stroke-width="2"/>
-            <!-- Habitation Truss -->
-            <rect x="14" y="30" width="36" height="4" rx="2" fill="#e2e8f0"/>
-            <!-- Solar Array Left -->
-            <rect x="2" y="16" width="12" height="32" rx="2" fill="#0d1b2a" stroke="#00f0ff" stroke-width="1.5"/>
-            <line x1="8" y1="16" x2="8" y2="48" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="2" y1="24" x2="14" y2="24" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="2" y1="32" x2="14" y2="32" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="2" y1="40" x2="14" y2="40" stroke="#00f0ff" stroke-width="1"/>
-            <!-- Solar Array Right -->
-            <rect x="50" y="16" width="12" height="32" rx="2" fill="#0d1b2a" stroke="#00f0ff" stroke-width="1.5"/>
-            <line x1="56" y1="16" x2="56" y2="48" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="50" y1="24" x2="62" y2="24" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="50" y1="32" x2="62" y2="32" stroke="#00f0ff" stroke-width="1"/>
-            <line x1="50" y1="40" x2="62" y2="40" stroke="#00f0ff" stroke-width="1"/>
+    // Friendly Satellite Marker Icon
+    const issMarkerHtml = `
+      <div class="iss-pin">
+        <div class="iss-ring"></div>
+        <div class="iss-badge-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
           </svg>
         </div>
-      `,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+      </div>
+    `;
+
+    const issIcon = L.divIcon({
+      className: "iss-custom-pin",
+      html: issMarkerHtml,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
     });
 
     const marker = L.marker([0, 0], { icon: issIcon, zIndexOffset: 1000 }).addTo(map);
 
-    // Trajectory Polyline
-    const trajectoryPath = L.polyline([], {
-      color: "#00f0ff",
-      weight: 3,
-      opacity: 0.85,
-      dashArray: "6, 6",
-      lineCap: "round"
-    }).addTo(map);
-
-    // Footprint Circle
-    const footprintCircle = L.circle([0, 0], {
-      radius: 2200 * 1000,
-      color: "#8b5cf6",
-      weight: 1,
-      fillColor: "#8b5cf6",
-      fillOpacity: 0.06
+    // Glowing Trail
+    const flightPath = L.polyline([], {
+      color: "#38bdf8",
+      weight: 3.5,
+      opacity: 0.8,
+      dashArray: "6, 8"
     }).addTo(map);
 
     /* =========================================================
-       HELPER FORMATTERS
+       FRIENDLY REVERSE GEOCODING
        ========================================================= */
-    function formatDMS(deg, isLat) {
-      const dir = isLat ? (deg >= 0 ? "N" : "S") : (deg >= 0 ? "E" : "W");
-      const abs = Math.abs(deg);
-      const d = Math.floor(abs);
-      const m = Math.floor((abs - d) * 60);
-      const s = ((abs - d - m / 60) * 3600).toFixed(1);
-      return `${d}° ${m}' ${s}" ${dir}`;
-    }
-
-    function addLog(text, highlight = "", isWarn = false) {
-      const now = new Date();
-      const timeStr = now.toISOString().replace("T", " ").substring(11, 19);
-
-      const div = document.createElement("div");
-      div.className = "log-line";
-      div.innerHTML = `
-        <span class="log-time">[${timeStr}]</span>
-        <span class="log-cycle">#${String(loopCycle).padStart(3, "0")}</span>
-        <span class="log-text ${isWarn ? "log-warn" : ""}">${text} ${highlight ? `<span class="log-highlight">${highlight}</span>` : ""}</span>
-      `;
-      elTerminal.appendChild(div);
-      elTerminal.scrollTop = elTerminal.scrollHeight;
-
-      // Keep max 200 log nodes
-      if (elTerminal.children.length > 200) {
-        elTerminal.removeChild(elTerminal.firstChild);
-      }
-    }
-
-    /* =========================================================
-       REVERSE GEOCODING WITH FAILOVER
-       ========================================================= */
-    async function reverseGeocode(lat, lon) {
+    async function getFriendlyLocation(lat, lon) {
       for (const endpoint of GEO_APIS) {
         try {
           const res = await fetch(`${endpoint}?latitude=${lat}&longitude=${lon}&localityLanguage=en`, { cache: "no-store" });
           if (!res.ok) continue;
           const data = await res.json();
-          const city = data.locality || data.city || data.principalSubdivision;
+          
+          const locality = data.locality || data.city || data.principalSubdivision;
           const country = data.countryName;
           const continent = data.continent || "";
 
-          if (city && country) {
+          if (country && locality) {
             return {
-              formatted: `${city}, ${country}`,
-              country: country,
-              badge: "LAND OVERFLIGHT",
-              isWater: false
+              hero: `${locality}, ${country}`,
+              card: country,
+              sub: `Flying over ${locality}`,
+              type: "Land Territory (Inhabited)"
             };
           } else if (country) {
             return {
-              formatted: country,
-              country: country,
-              badge: "LAND OVERFLIGHT",
-              isWater: false
+              hero: country,
+              card: country,
+              sub: `Flying over national airspace of ${country}`,
+              type: "Land Territory"
             };
           } else if (continent) {
             return {
-              formatted: `Remote ${continent} Region`,
-              country: continent,
-              badge: "CONTINENTAL",
-              isWater: false
+              hero: `Over ${continent}`,
+              card: continent,
+              sub: `Above rural / remote ${continent}`,
+              type: "Continental Region"
             };
           }
+          
           return {
-            formatted: "Open Ocean / Remote Waters",
-            country: "International Waters",
-            badge: "MARITIME",
-            isWater: true
+            hero: "Above Open Ocean Waters",
+            card: "Open Ocean",
+            sub: "No cities directly below; flying over international waters",
+            type: "Maritime / Ocean"
           };
         } catch (e) {
-          // fallback to next endpoint
+          // try next
         }
       }
+
       return {
-        formatted: "Open Ocean / Remote Area",
-        country: "Uncharted",
-        badge: "REMOTE",
-        isWater: true
+        hero: "Above Earth's Oceans",
+        card: "Ocean Surface",
+        sub: "Cruising over water",
+        type: "Open Water"
       };
     }
 
     /* =========================================================
-       TELEMETRY POLLING LOOP
+       TELEMETRY UPDATE LOOP
        ========================================================= */
-    let isFetching = false;
-    let currentLat = 0;
-    let currentLon = 0;
-
-    async function pollTelemetry() {
-      if (isFetching) return;
-      isFetching = true;
-      lastPollTime = Date.now();
-      loopCycle++;
-
+    async function updateTelemetry() {
       try {
-        const response = await fetch(ISS_API, { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const iss = await response.json();
+        const res = await fetch(ISS_API, { cache: "no-store" });
+        if (!res.ok) throw new Error("API error");
+        const iss = await res.json();
 
         currentLat = iss.latitude;
         currentLon = iss.longitude;
-        const altKm = iss.altitude;
-        const velKmh = iss.velocity;
-        const visibility = iss.visibility;
-        const footprintKm = iss.footprint;
+        const velKmh = Math.round(iss.velocity);
+        const velMph = Math.round(iss.velocity * 0.621371);
+        const altKm = Math.round(iss.altitude);
+        const visibility = (iss.visibility || "").toLowerCase();
 
-        // Coordinates display
-        const latStr = currentLat.toFixed(4);
-        const lonStr = currentLon.toFixed(4);
-        elValCoords.textContent = `${latStr}°, ${lonStr}°`;
-        elValLatDms.textContent = `Lat: ${formatDMS(currentLat, true)}`;
-        elValLonDms.textContent = `Lon: ${formatDMS(currentLon, false)}`;
-
-        // Velocity display
-        const velKms = (velKmh / 3600).toFixed(2);
-        const velMph = (velKmh * 0.621371).toFixed(0);
-        elValVelocity.textContent = `${Math.round(velKmh).toLocaleString()} km/h`;
-        elValVelocityMph.textContent = `${Number(velMph).toLocaleString()} mph`;
-        elValVelocityKms.textContent = `${velKms} km/s`;
-
-        // Altitude & Footprint
-        elValAltitude.textContent = `${altKm.toFixed(1)} km`;
-        elValFootprint.textContent = `Coverage: ~${Math.round(footprintKm).toLocaleString()} km`;
-
-        // Solar Visibility
-        const isDaylight = visibility.toLowerCase() === "daylight";
-        elValVisibility.textContent = isDaylight ? "DAYLIGHT" : "ECLIPSED (NIGHT)";
-        elSolarBadge.textContent = isDaylight ? "SOLAR CHARGE" : "BATTERY OPS";
-        elSolarBadge.className = isDaylight ? "badge badge-cyan" : "badge badge-purple";
-
-        // Update Map Marker & Trajectory
+        // 1. Update Map
         const pos = [currentLat, currentLon];
         marker.setLatLng(pos);
-        footprintCircle.setLatLng(pos);
-        footprintCircle.setRadius((footprintKm / 2) * 1000);
 
         trailPoints.push(pos);
-        if (trailPoints.length > 500) trailPoints.shift();
-        trajectoryPath.setLatLngs(trailPoints);
+        if (trailPoints.length > 400) trailPoints.shift();
+        flightPath.setLatLngs(trailPoints);
 
         if (autoFollow) {
-          map.panTo(pos, { animate: true, duration: 0.6 });
+          map.panTo(pos, { animate: true, duration: 0.5 });
         }
 
-        // Reverse Geocoding
-        const geoInfo = await reverseGeocode(currentLat, currentLon);
-        elValLocation.textContent = geoInfo.formatted;
-        elValCountry.textContent = geoInfo.country;
-        elTerritoryBadge.textContent = geoInfo.badge;
-        elTerritoryBadge.className = geoInfo.isWater ? "badge badge-cyan" : "badge badge-green";
+        // 2. Simple Stats
+        cardSpeed.textContent = `${velKmh.toLocaleString()} km/h`;
+        cardAltitude.textContent = `${altKm} km above Earth`;
 
-        // Audio Chirp
-        playSciFiChirp(isDaylight ? 960 : 720);
+        if (visibility === "daylight") {
+          cardDayNight.textContent = "☀️ Daylight";
+          cardDayNight.style.color = "#fbbf24";
+          cardDayNightSub.innerHTML = "Astronauts currently see <strong>bright blue Earth in sunlight</strong>.";
+        } else {
+          cardDayNight.textContent = "🌙 Night (Earth's Shadow)";
+          cardDayNight.style.color = "#c084fc";
+          cardDayNightSub.innerHTML = "Astronauts see <strong>city night lights & bright stars</strong>.";
+        }
 
-        // Terminal Log Record
-        const logEntry = {
-          cycle: loopCycle,
-          timestamp: new Date().toISOString(),
-          lat: currentLat,
-          lon: currentLon,
-          alt: altKm,
-          vel: velKmh,
-          location: geoInfo.formatted
-        };
-        sessionLogs.push(logEntry);
+        // 3. Technical panel values
+        techLat.textContent = `${currentLat.toFixed(4)}°`;
+        techLon.textContent = `${currentLon.toFixed(4)}°`;
+        techMph.textContent = `${velMph.toLocaleString()} mph`;
+        techFootprint.textContent = `~${Math.round(iss.footprint).toLocaleString()} km`;
 
-        addLog(`Position locked at ${latStr}, ${lonStr} |`, geoInfo.formatted);
+        // 4. Reverse Geocode for Human-friendly Names
+        const loc = await getFriendlyLocation(currentLat, currentLon);
+        heroLocationName.textContent = loc.hero;
+        heroLocationSub.textContent = loc.sub;
+        cardTerritory.textContent = loc.card;
+        cardSurfaceType.textContent = loc.type;
 
       } catch (err) {
-        console.error("Telemetry fetch error:", err);
-        addLog(`Telemetry packet drop: ${err.message}`, "", true);
-      } finally {
-        isFetching = false;
+        console.warn("Update notice:", err);
       }
     }
 
     /* =========================================================
-       LOOP SCHEDULER & SMOOTH PROGRESS BAR
+       USER INTERACTION HANDLERS
        ========================================================= */
-    function startLoop() {
-      if (timerId) clearInterval(timerId);
-      if (progressTimerId) clearInterval(progressTimerId);
 
-      pollTelemetry();
-      timerId = setInterval(pollTelemetry, pollInterval);
-
-      // Smooth progress bar update
-      progressTimerId = setInterval(() => {
-        if (!isLoopRunning) {
-          elProgressBar.style.width = "0%";
-          return;
-        }
-        const elapsed = Date.now() - lastPollTime;
-        const pct = Math.min(100, (elapsed / pollInterval) * 100);
-        elProgressBar.style.width = `${pct}%`;
-      }, 50);
-    }
-
-    function pauseLoop() {
-      if (timerId) clearInterval(timerId);
-      if (progressTimerId) clearInterval(progressTimerId);
-      timerId = null;
-      progressTimerId = null;
-      elProgressBar.style.width = "0%";
-    }
-
-    // Toggle loop
-    btnToggleLoop.addEventListener("click", () => {
-      isLoopRunning = !isLoopRunning;
-      if (isLoopRunning) {
-        startLoop();
-        btnToggleLoop.className = "btn btn-active";
-        btnToggleLoop.innerHTML = `<span>Pause Loop</span>`;
-        elHeartbeatText.textContent = "LOOP: ACTIVE";
-        elHeartbeatDot.style.background = "var(--neon-emerald)";
-        elHeartbeatDot.style.animation = "pulse 1.8s infinite";
-        addLog("Autonomous telemetry watch loop resumed.");
-      } else {
-        pauseLoop();
-        btnToggleLoop.className = "btn";
-        btnToggleLoop.innerHTML = `<span>Resume Loop</span>`;
-        elHeartbeatText.textContent = "LOOP: PAUSED";
-        elHeartbeatDot.style.background = "var(--neon-amber)";
-        elHeartbeatDot.style.animation = "none";
-        addLog("Autonomous telemetry watch loop paused.", "", true);
-      }
-    });
-
-    // Recenter ISS
+    // Recenter map
     btnRecenter.addEventListener("click", () => {
       if (currentLat !== 0 || currentLon !== 0) {
         map.setView([currentLat, currentLon], 4, { animate: true });
-        addLog("Camera recentered on ISS coordinates.");
       }
     });
 
-    // Auto Follow Toggle
-    btnToggleFollow.addEventListener("click", () => {
+    // Toggle Auto-Follow
+    btnFollow.addEventListener("click", () => {
       autoFollow = !autoFollow;
-      const dot = document.getElementById("follow-status-dot");
       if (autoFollow) {
-        btnToggleFollow.className = "btn";
-        btnToggleFollow.innerHTML = `<span id="follow-status-dot" style="width: 7px; height: 7px; border-radius: 50%; background: var(--neon-emerald); display: inline-block;"></span> Auto-Follow: ON`;
+        btnFollow.innerHTML = `<span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span> Auto-Follow: ON`;
         if (currentLat !== 0 || currentLon !== 0) {
           map.panTo([currentLat, currentLon]);
         }
       } else {
-        btnToggleFollow.className = "btn";
-        btnToggleFollow.innerHTML = `<span id="follow-status-dot" style="width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); display: inline-block;"></span> Auto-Follow: OFF`;
+        btnFollow.innerHTML = `<span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted);"></span> Auto-Follow: OFF`;
       }
     });
 
-    // Interval Selector
-    selectInterval.addEventListener("change", (e) => {
-      pollInterval = parseInt(e.target.value, 10);
-      addLog(`Loop heartbeat interval set to ${pollInterval / 1000}s`);
-      if (isLoopRunning) {
-        startLoop();
-      }
-    });
-
-    // Manual Poll
-    btnManualPoll.addEventListener("click", () => {
-      addLog("Manual telemetry scan initiated...");
-      pollTelemetry();
-    });
-
-    // Clear Trail
-    btnClearTrail.addEventListener("click", () => {
+    // Clear flight trail
+    btnClearPath.addEventListener("click", () => {
       trailPoints.length = 0;
-      trajectoryPath.setLatLngs([]);
-      addLog("Trajectory trail wiped from display.");
+      flightPath.setLatLngs([]);
     });
 
-    // Clear Terminal Logs
-    btnClearLogs.addEventListener("click", () => {
-      elTerminal.innerHTML = "";
-      addLog("Terminal log display reset.");
+    // Toggle Technical Panel
+    toggleTech.addEventListener("click", () => {
+      const isOpen = techPanel.classList.toggle("open");
+      techArrow.textContent = isOpen ? "▲" : "▼";
     });
 
-    // Sound Toggle
-    btnToggleSound.addEventListener("click", () => {
-      audioEnabled = !audioEnabled;
-      if (audioEnabled) {
-        btnToggleSound.className = "btn btn-active";
-        btnToggleSound.innerHTML = `<span>Audio: ON</span>`;
-        playSciFiChirp(880, 0.1);
-        addLog("Telemetry audio chirps active.");
-      } else {
-        btnToggleSound.className = "btn";
-        btnToggleSound.innerHTML = `<span>Audio: OFF</span>`;
-        addLog("Telemetry audio muted.");
-      }
-    });
-
-    // Export JSON Log
-    btnExportLog.addEventListener("click", () => {
-      if (sessionLogs.length === 0) {
-        alert("No session logs recorded yet.");
-        return;
-      }
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sessionLogs, null, 2));
-      const downloadAnchor = document.createElement("a");
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `iss_session_logs_${Date.now()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      addLog(`Exported ${sessionLogs.length} session telemetry logs.`);
-    });
-
-    // Start on boot
-    startLoop();
+    // Run immediately and repeat every 3.5 seconds
+    updateTelemetry();
+    setInterval(updateTelemetry, 3500);
 
   </script>
 </body>
