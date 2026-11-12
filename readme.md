@@ -1,33 +1,40 @@
-# ISS Watch Loop // Autonomous Telemetry & Orbit Tracker
+# 🛰️ ISS Watch Loop // Live Space Station Tracker
 
-A high-tech demonstration of **Concept 4: In-Session Loops** in Loop Engineering. This project pairs an autonomous terminal heartbeat loop with a modern, glassmorphic mission-control web dashboard tracking the International Space Station (ISS) in real time.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-iss--watch--loop.vercel.app-0284c7?style=for-the-badge&logo=vercel&logoColor=white)](https://iss-watch-loop.vercel.app)
+[![Auto Deploy](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://iss-watch-loop.vercel.app)
+
+> 🔴 **Live Demo Website**: [**https://iss-watch-loop.vercel.app**](https://iss-watch-loop.vercel.app)  
+> Track where the International Space Station (ISS) and astronauts are right now in real time!
 
 ---
 
-## 🛰️ 1. Interactive Web Dashboard (`index.html`)
+A high-tech demonstration of **Concept 4: In-Session Loops** in Loop Engineering. This project pairs an autonomous terminal heartbeat loop with a modern, intuitive, and non-technical friendly web dashboard.
 
-A futuristic, cyber-themed space mission-control interface built for real-time orbital visualization and telemetry monitoring:
+---
 
-- **Live CartoDB Dark Matter Map**: High-performance interactive world map powered by Leaflet.js with custom ISS radar pulse marker and historic trajectory trail.
-- **Autonomous Telemetry Loop**: Configurable polling heartbeat (`2s`, `5s`, `10s`, `30s`, `60s`) with smooth progress indicator.
-- **Subsatellite Telemetry**: Real-time Latitude & Longitude (Decimal & DMS), Orbital Velocity (km/h, mph, km/s), Altitude (LEO), and Footprint diameter.
-- **Dynamic Reverse Geocoding**: Real-time territory resolution detecting whether the ISS is over a specific country/region or open ocean waters.
-- **Solar Visibility State**: Computes daylight vs eclipsed (nighttime) orbital phases.
-- **Autonomous Watcher Feed**: Live terminal streaming each cycle's telemetry packets.
-- **Web Audio Sci-Fi Chirp**: Synthesized acoustic feedback on coordinate locks.
-- **Session Export**: Export flight telemetry logs directly to JSON.
+## 🌍 1. Live Interactive Web Dashboard
 
-### How to Run the Frontend
-You can open `index.html` directly in any web browser:
+Check the live demo at [**iss-watch-loop.vercel.app**](https://iss-watch-loop.vercel.app) — built to be simple and engaging for everyone:
+
+- 📍 **Instant Location**: Instantly shows whether astronauts are flying over a specific country or open ocean.
+- 🚀 **Travel Speed**: Real-time speed (~27,600 km/h) with easy-to-understand context (*circles Earth every 90 mins!*).
+- 📏 **Height Above Earth**: ~420 km altitude (*40x higher than airplanes*).
+- ☀️ **Astronauts' View**: Shows daylight vs night view (*astronauts see 16 sunrises and sunsets a day*).
+- 🗺️ **World Map**: Smooth dark map powered by Leaflet.js showing the Station marker, radar ring, and flight trajectory path.
+- 👨‍🚀 **Space Facts**: Fun bite-sized facts about the ISS for curious minds.
+- ⚙️ **Technical Details Toggle**: Dropdown for developers & space enthusiasts who want exact coordinates, ground footprint, and satellite telemetry.
+
+### Run Locally
+You can also run or open `index.html` locally:
 
 ```bash
 # On Windows PowerShell:
 Start-Process index.html
 
-# Or run a quick local server:
+# Or run a local python server:
 python -m http.server 8000
 ```
-Then visit `http://localhost:8000` in your browser. It also deploys directly to **GitHub Pages** with zero build configuration!
+Then visit `http://localhost:8000` in your browser.
 
 ---
 
