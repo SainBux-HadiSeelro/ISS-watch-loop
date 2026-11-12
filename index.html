@@ -3,42 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ISS Live Tracker // International Space Station</title>
-  
+  <title>ISS Live Tracker</title>
+
   <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
-  
-  <!-- Google Fonts: Inter & Outfit for modern, friendly readability -->
+
+  <!-- Clean, modern fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
     rel="stylesheet"
   />
 
   <style>
     :root {
-      --bg-body: #0a0e17;
-      --bg-card: rgba(19, 26, 42, 0.75);
-      --bg-card-hover: rgba(26, 36, 58, 0.9);
-      --border-card: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(56, 189, 248, 0.3);
-      --accent-blue: #38bdf8;
-      --accent-emerald: #10b981;
-      --accent-amber: #f59e0b;
-      --accent-purple: #a855f7;
-      --accent-rose: #f43f5e;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #10b981;
     }
 
     * {
@@ -48,492 +38,291 @@
     }
 
     body {
-      background-color: var(--bg-body);
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 100% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-primary);
-      font-family: var(--font-sans);
+      background: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 50%);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
     }
 
-    /* Scrollbars */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0a0e17;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-
-    /* TOP NAVBAR */
+    /* HEADER */
     header {
-      background: rgba(10, 14, 23, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-card);
-      padding: 1rem 1.5rem;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
-    .nav-container {
-      max-width: 1300px;
+    .nav {
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
-    }
-
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #0284c7, #6366f1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
-    }
-
-    .brand-icon svg {
-      width: 26px;
-      height: 26px;
-      color: #ffffff;
-    }
-
-    .brand-text h1 {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
+      gap: 0.6rem;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.01em;
-      color: #ffffff;
+    }
+
+    .brand span.badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .live-pill {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-    }
-
-    .brand-text p {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-    }
-
-    .live-status {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 0.4rem 0.9rem;
-      border-radius: 9999px;
       font-size: 0.82rem;
       font-weight: 600;
-      color: var(--accent-emerald);
+      color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
     }
 
-    .live-dot {
-      width: 9px;
-      height: 9px;
+    .dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: var(--accent-emerald);
-      box-shadow: 0 0 10px var(--accent-emerald);
-      animation: pulse-ring 2s infinite;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
     }
 
-    @keyframes pulse-ring {
+    @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.5; }
+      50% { transform: scale(1.3); opacity: 0.4; }
     }
 
     /* MAIN CONTAINER */
     main {
-      max-width: 1300px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 1.8rem 1.5rem 3rem;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 1.8rem;
+      gap: 1.4rem;
+      flex: 1;
     }
 
-    /* HERO LIVE LOCATION BANNER */
-    .hero-banner {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
-      border: 1px solid rgba(56, 189, 248, 0.25);
+    /* HERO CARD: WHERE IS IT NOW? */
+    .hero-card {
+      background: var(--card-bg);
       backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
       border-radius: 20px;
       padding: 1.6rem 2rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-banner::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .hero-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      color: var(--accent-blue);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .hero-title {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .hero-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.65rem 1.2rem;
-      border-radius: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      border: 1px solid var(--border-card);
-      background: rgba(30, 41, 59, 0.8);
-      color: var(--text-primary);
-    }
-
-    .btn:hover {
-      background: rgba(51, 65, 85, 0.9);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      border-color: rgba(56, 189, 248, 0.4);
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #0369a1, #1d4ed8);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
-    }
-
-    /* 4 SIMPLE STAT CARDS */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.2rem;
     }
 
-    .stat-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-card);
-      border-radius: 18px;
-      padding: 1.4rem;
+    .hero-text {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      transition: all 0.25s ease;
-      position: relative;
+      gap: 0.3rem;
     }
 
-    .stat-card:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-accent);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    .stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .stat-title {
-      font-size: 0.88rem;
+    .hero-label {
+      font-size: 0.82rem;
       font-weight: 600;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .stat-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .hero-location {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
     }
 
-    .icon-blue { background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); }
-    .icon-emerald { background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald); }
-    .icon-purple { background: rgba(168, 85, 247, 0.12); color: var(--accent-purple); }
-    .icon-amber { background: rgba(245, 158, 11, 0.12); color: var(--accent-amber); }
+    .hero-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
 
-    .stat-val {
-      font-family: var(--font-display);
-      font-size: 1.75rem;
+    /* METRICS: 3 SIMPLE TILES */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .metric-tile {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.2rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .metric-tile:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .metric-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .metric-value {
+      font-size: 1.6rem;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: -0.01em;
     }
 
-    .stat-desc {
-      font-size: 0.82rem;
+    .metric-desc {
+      font-size: 0.8rem;
       color: var(--text-muted);
-      line-height: 1.4;
     }
 
-    .stat-desc strong {
-      color: var(--text-secondary);
-    }
-
-    /* MAP SECTION */
-    .map-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border-card);
+    /* MAP CONTAINER */
+    .map-container {
+      position: relative;
       border-radius: 20px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--card-border);
+      background: #0b0f19;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
-    .map-header {
-      padding: 1.1rem 1.6rem;
-      border-bottom: 1px solid var(--border-card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      background: rgba(15, 23, 42, 0.6);
-    }
-
-    .map-header-title {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .map-controls-group {
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-    }
-
-    #map-view {
+    #map {
       width: 100%;
-      height: 520px;
+      height: 480px;
       background: #0b0f19;
     }
 
-    /* CUSTOM SATELLITE MARKER */
-    .iss-pin {
-      position: relative;
+    /* MAP FLOATING BUTTON */
+    .map-btn {
+      position: absolute;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      z-index: 500;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .map-btn:hover {
+      background: #0284c7;
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+
+    /* SATELLITE MARKER */
+    .iss-marker {
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
-    .iss-ring {
+    .iss-halo {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: rgba(56, 189, 248, 0.2);
-      border: 2px solid var(--accent-blue);
-      animation: ping-wave 2s infinite cubic-bezier(0, 0, 0.2, 1);
+      border: 1.5px solid var(--accent);
+      animation: pulse-ring 2s infinite ease-out;
     }
 
-    @keyframes ping-wave {
+    @keyframes pulse-ring {
       0% { transform: scale(0.6); opacity: 1; }
       100% { transform: scale(1.6); opacity: 0; }
     }
 
-    .iss-badge-icon {
+    .iss-icon {
       position: relative;
-      z-index: 10;
+      z-index: 2;
       background: #0f172a;
       border: 2px solid #38bdf8;
       border-radius: 50%;
-      padding: 6px;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    /* EXPLAINER / FUN FACTS SECTION (NON-TECHNICAL) */
-    .facts-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.4rem;
-    }
-
-    .fact-card {
-      background: rgba(20, 27, 45, 0.55);
-      border: 1px solid var(--border-card);
-      border-radius: 16px;
-      padding: 1.4rem;
-      display: flex;
-      gap: 1rem;
-    }
-
-    .fact-icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-
-    .fact-content h4 {
-      font-family: var(--font-display);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
       font-size: 1rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.3rem;
     }
 
-    .fact-content p {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-
-    /* COLLAPSIBLE TECHNICAL SECTION */
-    .details-toggle {
-      background: transparent;
-      border: 1px solid var(--border-card);
+    /* SUMMARY INFO */
+    .info-bar {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 0.9rem 1.4rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      color: var(--text-secondary);
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-
-    .details-toggle:hover {
-      background: rgba(255, 255, 255, 0.03);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .tech-panel {
-      display: none;
-      background: rgba(12, 17, 29, 0.85);
-      border: 1px solid var(--border-card);
-      border-radius: 16px;
-      padding: 1.4rem;
-      margin-top: 0.8rem;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.2rem;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-    }
-
-    .tech-panel.open {
-      display: grid;
-    }
-
-    .tech-item span {
-      display: block;
+      gap: 0.8rem;
+      font-size: 0.86rem;
       color: var(--text-muted);
-      font-size: 0.72rem;
-      margin-bottom: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
-    .tech-item p {
-      color: var(--accent-blue);
-      font-weight: 600;
-      font-size: 0.95rem;
+    .info-bar strong {
+      color: #ffffff;
     }
 
     /* FOOTER */
     footer {
-      border-top: 1px solid var(--border-card);
-      padding: 1.6rem 1.5rem;
+      border-top: 1px solid var(--card-border);
+      padding: 1.4rem;
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      margin-top: auto;
-      background: rgba(10, 14, 23, 0.95);
     }
 
     footer a {
-      color: var(--accent-blue);
+      color: var(--accent);
       text-decoration: none;
     }
 
@@ -541,36 +330,28 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 640px) {
-      .hero-title {
-        font-size: 1.5rem;
+    @media (max-width: 600px) {
+      .hero-location {
+        font-size: 1.4rem;
       }
-      #map-view {
-        height: 380px;
+      #map {
+        height: 360px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP BAR -->
+  <!-- SIMPLE CLEAN HEADER -->
   <header>
-    <div class="nav-container">
+    <div class="nav">
       <div class="brand">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <h1>ISS Live Tracker</h1>
-          <p>Where are the astronauts right now?</p>
-        </div>
+        🛰️ Space Station Tracker
+        <span class="badge">Live</span>
       </div>
-
-      <div class="live-status">
-        <div class="live-dot"></div>
-        <span id="status-text">Live Tracking (Updates every 3s)</span>
+      <div class="live-pill">
+        <div class="dot"></div>
+        <span>Tracking Active</span>
       </div>
     </div>
   </header>
@@ -578,214 +359,66 @@
   <!-- MAIN BODY -->
   <main>
 
-    <!-- HERO LOCATION BANNER -->
-    <div class="hero-banner">
-      <div class="hero-info">
-        <div class="hero-label">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          Current Location Above Earth
-        </div>
-        <div class="hero-title" id="hero-location-name">Scanning Earth surface...</div>
-        <div class="hero-subtitle" id="hero-location-sub">Detecting current country or ocean in real time</div>
-      </div>
-
-      <div class="hero-actions">
-        <button class="btn btn-primary" id="btn-recenter">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Center on Station
-        </button>
-        <button class="btn" id="btn-follow">
-          <span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span>
-          Auto-Follow: ON
-        </button>
+    <!-- HERO LOCATION -->
+    <div class="hero-card">
+      <div class="hero-text">
+        <div class="hero-label">Currently Flying Over</div>
+        <div class="hero-location" id="location-name">Detecting location...</div>
+        <div class="hero-sub" id="location-sub">Tracking the station's path in real time</div>
       </div>
     </div>
 
-    <!-- 4 EASY-TO-UNDERSTAND CARDS -->
-    <div class="stats-grid">
-
-      <!-- CARD 1: FLYING OVER -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Territory</span>
-          <div class="stat-icon icon-emerald">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-          </div>
-        </div>
-        <div class="stat-val" id="card-territory" style="font-size: 1.35rem;">Locating...</div>
-        <div class="stat-desc">
-          <strong>Type: </strong><span id="card-surface-type">Analyzing land/ocean</span>
-        </div>
+    <!-- 3 SIMPLE METRICS -->
+    <div class="metrics-grid">
+      <div class="metric-tile">
+        <div class="metric-title">🚀 Current Speed</div>
+        <div class="metric-value" id="val-speed">-- km/h</div>
+        <div class="metric-desc">Circles the Earth every 90 minutes</div>
       </div>
 
-      <!-- CARD 2: SPEED -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Travel Speed</span>
-          <div class="stat-icon icon-blue">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-            </svg>
-          </div>
-        </div>
-        <div class="stat-val" id="card-speed">-- km/h</div>
-        <div class="stat-desc">
-          Moves at <strong>~7.6 km per second</strong>. Completes a full loop around Earth in 90 minutes!
-        </div>
+      <div class="metric-tile">
+        <div class="metric-title">📏 Height Above Earth</div>
+        <div class="metric-value" id="val-altitude">-- km</div>
+        <div class="metric-desc">About 40x higher than airplanes</div>
       </div>
 
-      <!-- CARD 3: HEIGHT -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Altitude in Space</span>
-          <div class="stat-icon icon-purple">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-        </div>
-        <div class="stat-val" id="card-altitude">-- km</div>
-        <div class="stat-desc">
-          Orbiting about <strong>40 times higher</strong> than commercial passenger airplanes.
-        </div>
-      </div>
-
-      <!-- CARD 4: DAY OR NIGHT -->
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Astronauts' View</span>
-          <div class="stat-icon icon-amber">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </div>
-        </div>
-        <div class="stat-val" id="card-daynight" style="font-size: 1.45rem;">--</div>
-        <div class="stat-desc" id="card-daynight-sub">
-          They experience <strong>16 sunrises & sunsets</strong> every 24 hours.
-        </div>
-      </div>
-
-    </div>
-
-    <!-- INTERACTIVE MAP -->
-    <div class="map-card">
-      <div class="map-header">
-        <div class="map-header-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
-          Live World Map (Past Path & Current Position)
-        </div>
-        <div class="map-controls-group">
-          <button class="btn" id="btn-clear-path">Clear Flight Trail</button>
-        </div>
-      </div>
-      <div id="map-view"></div>
-    </div>
-
-    <!-- FUN FACTS FOR NON-TECHNICAL USERS -->
-    <div class="facts-section">
-      <div class="fact-card">
-        <div class="fact-icon">👨‍🚀</div>
-        <div class="fact-content">
-          <h4>Who lives up there?</h4>
-          <p>Between 6 to 10 astronauts live and work aboard the ISS continuously, conducting scientific experiments for all humankind.</p>
-        </div>
-      </div>
-
-      <div class="fact-card">
-        <div class="fact-icon">⚽</div>
-        <div class="fact-content">
-          <h4>How big is the Station?</h4>
-          <p>It's about the size of a full American football field (109 meters end-to-end), weighing over 400,000 kilograms!</p>
-        </div>
-      </div>
-
-      <div class="fact-card">
-        <div class="fact-icon">👀</div>
-        <div class="fact-content">
-          <h4>Can you see it from your home?</h4>
-          <p>Yes! It looks like a very bright, fast-moving star gliding across the night sky with no blinking lights.</p>
-        </div>
+      <div class="metric-tile">
+        <div class="metric-title">☀️ Astronauts' View</div>
+        <div class="metric-value" id="val-daylight" style="font-size: 1.35rem;">--</div>
+        <div class="metric-desc">16 sunrises & sunsets every 24 hours</div>
       </div>
     </div>
 
-    <!-- OPTIONAL TECHNICAL DETAILS ACCORDION -->
-    <div>
-      <button class="details-toggle" id="toggle-tech">
-        <span>⚙️ Show Technical Coordinates & GPS Telemetry</span>
-        <span id="tech-arrow">▼</span>
+    <!-- THE WORLD MAP -->
+    <div class="map-container">
+      <div id="map"></div>
+      <button class="map-btn" id="btn-recenter">
+        🎯 Center on Station
       </button>
+    </div>
 
-      <div class="tech-panel" id="tech-panel">
-        <div class="tech-item">
-          <span>Exact Latitude</span>
-          <p id="tech-lat">--</p>
-        </div>
-        <div class="tech-item">
-          <span>Exact Longitude</span>
-          <p id="tech-lon">--</p>
-        </div>
-        <div class="tech-item">
-          <span>Speed (Miles/hr)</span>
-          <p id="tech-mph">--</p>
-        </div>
-        <div class="tech-item">
-          <span>Ground Footprint</span>
-          <p id="tech-footprint">--</p>
-        </div>
-        <div class="tech-item">
-          <span>NORAD Satellite ID</span>
-          <p>25544</p>
-        </div>
-        <div class="tech-item">
-          <span>Orbital Period</span>
-          <p>~92.8 Minutes</p>
-        </div>
-      </div>
+    <!-- QUICK SIMPLE FACT -->
+    <div class="info-bar">
+      <span>💡</span>
+      <span>
+        <strong>Did you know?</strong> 7 astronauts currently live and work aboard the Space Station as it orbits Earth at 7.6 km per second.
+      </span>
     </div>
 
   </main>
 
   <!-- FOOTER -->
   <footer>
-    <p>
-      International Space Station Live Tracker &bull; Powered by NASA / WhereTheISS &amp; BigDataCloud &bull; Built with modern Web Standards
-    </p>
+    Live International Space Station Tracker &bull; Powered by NASA &amp; WhereTheISS &bull; <a href="https://github.com/SainBux-HadiSeelro/ISS-watch-loop" target="_blank" rel="noopener">GitHub Project</a>
   </footer>
 
   <!-- Leaflet JS -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
 
   <script>
-    /* =========================================================
-       NON-TECHNICAL & INTUITIVE ISS CONTROLLER
-       ========================================================= */
-
     const ISS_API = "https://api.wheretheiss.at/v1/satellites/25544";
     const GEO_APIS = [
       "https://api.bigdatacloud.net/data/reverse-geocode-client",
@@ -794,236 +427,126 @@
 
     let currentLat = 0;
     let currentLon = 0;
-    let autoFollow = true;
     const trailPoints = [];
 
     // DOM Elements
-    const heroLocationName = document.getElementById("hero-location-name");
-    const heroLocationSub = document.getElementById("hero-location-sub");
-    const cardTerritory = document.getElementById("card-territory");
-    const cardSurfaceType = document.getElementById("card-surface-type");
-    const cardSpeed = document.getElementById("card-speed");
-    const cardAltitude = document.getElementById("card-altitude");
-    const cardDayNight = document.getElementById("card-daynight");
-    const cardDayNightSub = document.getElementById("card-daynight-sub");
-
-    const techLat = document.getElementById("tech-lat");
-    const techLon = document.getElementById("tech-lon");
-    const techMph = document.getElementById("tech-mph");
-    const techFootprint = document.getElementById("tech-footprint");
-
+    const elLocation = document.getElementById("location-name");
+    const elLocationSub = document.getElementById("location-sub");
+    const elSpeed = document.getElementById("val-speed");
+    const elAltitude = document.getElementById("val-altitude");
+    const elDaylight = document.getElementById("val-daylight");
     const btnRecenter = document.getElementById("btn-recenter");
-    const btnFollow = document.getElementById("btn-follow");
-    const followIndicator = document.getElementById("follow-indicator");
-    const btnClearPath = document.getElementById("btn-clear-path");
-    const toggleTech = document.getElementById("toggle-tech");
-    const techPanel = document.getElementById("tech-panel");
-    const techArrow = document.getElementById("tech-arrow");
 
-    /* =========================================================
-       MAP INITIALIZATION (Clean & Sleek Dark Map)
-       ========================================================= */
-    const map = L.map("map-view", {
+    // Initialize Map
+    const map = L.map("map", {
       center: [20, 0],
       zoom: 3,
       minZoom: 2,
-      maxZoom: 9,
-      worldCopyJump: true,
-      zoomControl: true
+      maxZoom: 8,
+      worldCopyJump: true
     });
 
-    // Elegant CartoDB Dark Matter map
+    // Dark sleek map tiles
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; OpenStreetMap, CARTO',
       subdomains: "abcd",
       maxZoom: 19
     }).addTo(map);
 
-    // Friendly Satellite Marker Icon
-    const issMarkerHtml = `
-      <div class="iss-pin">
-        <div class="iss-ring"></div>
-        <div class="iss-badge-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
-        </div>
-      </div>
-    `;
-
+    // Custom Satellite Icon
     const issIcon = L.divIcon({
-      className: "iss-custom-pin",
-      html: issMarkerHtml,
-      iconSize: [44, 44],
-      iconAnchor: [22, 22]
+      className: "iss-custom-marker",
+      html: `
+        <div class="iss-marker">
+          <div class="iss-halo"></div>
+          <div class="iss-icon">🛰️</div>
+        </div>
+      `,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
     });
 
     const marker = L.marker([0, 0], { icon: issIcon, zIndexOffset: 1000 }).addTo(map);
 
-    // Glowing Trail
-    const flightPath = L.polyline([], {
+    // Flight Trail
+    const path = L.polyline([], {
       color: "#38bdf8",
-      weight: 3.5,
+      weight: 3,
       opacity: 0.8,
       dashArray: "6, 8"
     }).addTo(map);
 
-    /* =========================================================
-       FRIENDLY REVERSE GEOCODING
-       ========================================================= */
-    async function getFriendlyLocation(lat, lon) {
-      for (const endpoint of GEO_APIS) {
+    // Friendly location lookup
+    async function fetchLocation(lat, lon) {
+      for (const url of GEO_APIS) {
         try {
-          const res = await fetch(`${endpoint}?latitude=${lat}&longitude=${lon}&localityLanguage=en`, { cache: "no-store" });
+          const res = await fetch(`${url}?latitude=${lat}&longitude=${lon}&localityLanguage=en`, { cache: "no-store" });
           if (!res.ok) continue;
           const data = await res.json();
-          
-          const locality = data.locality || data.city || data.principalSubdivision;
+          const place = data.locality || data.city || data.principalSubdivision;
           const country = data.countryName;
-          const continent = data.continent || "";
+          const continent = data.continent;
 
-          if (country && locality) {
-            return {
-              hero: `${locality}, ${country}`,
-              card: country,
-              sub: `Flying over ${locality}`,
-              type: "Land Territory (Inhabited)"
-            };
+          if (place && country) {
+            return { title: `${place}, ${country}`, sub: "Flying directly above land" };
           } else if (country) {
-            return {
-              hero: country,
-              card: country,
-              sub: `Flying over national airspace of ${country}`,
-              type: "Land Territory"
-            };
+            return { title: country, sub: "Flying above national territory" };
           } else if (continent) {
-            return {
-              hero: `Over ${continent}`,
-              card: continent,
-              sub: `Above rural / remote ${continent}`,
-              type: "Continental Region"
-            };
+            return { title: `Over ${continent}`, sub: "Cruising over continental airspace" };
           }
-          
-          return {
-            hero: "Above Open Ocean Waters",
-            card: "Open Ocean",
-            sub: "No cities directly below; flying over international waters",
-            type: "Maritime / Ocean"
-          };
-        } catch (e) {
-          // try next
-        }
+          return { title: "Open Ocean Waters", sub: "Flying above international seas" };
+        } catch (e) {}
       }
-
-      return {
-        hero: "Above Earth's Oceans",
-        card: "Ocean Surface",
-        sub: "Cruising over water",
-        type: "Open Water"
-      };
+      return { title: "Above Earth's Oceans", sub: "Cruising over water" };
     }
 
-    /* =========================================================
-       TELEMETRY UPDATE LOOP
-       ========================================================= */
-    async function updateTelemetry() {
+    // Telemetry fetch
+    async function update() {
       try {
         const res = await fetch(ISS_API, { cache: "no-store" });
-        if (!res.ok) throw new Error("API error");
+        if (!res.ok) return;
         const iss = await res.json();
 
         currentLat = iss.latitude;
         currentLon = iss.longitude;
-        const velKmh = Math.round(iss.velocity);
-        const velMph = Math.round(iss.velocity * 0.621371);
+        const speedKmh = Math.round(iss.velocity);
         const altKm = Math.round(iss.altitude);
-        const visibility = (iss.visibility || "").toLowerCase();
+        const isDay = (iss.visibility || "").toLowerCase() === "daylight";
 
-        // 1. Update Map
+        // Update map
         const pos = [currentLat, currentLon];
         marker.setLatLng(pos);
 
         trailPoints.push(pos);
-        if (trailPoints.length > 400) trailPoints.shift();
-        flightPath.setLatLngs(trailPoints);
+        if (trailPoints.length > 300) trailPoints.shift();
+        path.setLatLngs(trailPoints);
 
-        if (autoFollow) {
-          map.panTo(pos, { animate: true, duration: 0.5 });
-        }
+        // Update stats
+        elSpeed.textContent = `${speedKmh.toLocaleString()} km/h`;
+        elAltitude.textContent = `${altKm} km`;
+        elDaylight.textContent = isDay ? "☀️ Daylight" : "🌙 Earth's Shadow";
+        elDaylight.style.color = isDay ? "#fbbf24" : "#c084fc";
 
-        // 2. Simple Stats
-        cardSpeed.textContent = `${velKmh.toLocaleString()} km/h`;
-        cardAltitude.textContent = `${altKm} km above Earth`;
+        // Update location
+        const loc = await fetchLocation(currentLat, currentLon);
+        elLocation.textContent = loc.title;
+        elLocationSub.textContent = loc.sub;
 
-        if (visibility === "daylight") {
-          cardDayNight.textContent = "☀️ Daylight";
-          cardDayNight.style.color = "#fbbf24";
-          cardDayNightSub.innerHTML = "Astronauts currently see <strong>bright blue Earth in sunlight</strong>.";
-        } else {
-          cardDayNight.textContent = "🌙 Night (Earth's Shadow)";
-          cardDayNight.style.color = "#c084fc";
-          cardDayNightSub.innerHTML = "Astronauts see <strong>city night lights & bright stars</strong>.";
-        }
-
-        // 3. Technical panel values
-        techLat.textContent = `${currentLat.toFixed(4)}°`;
-        techLon.textContent = `${currentLon.toFixed(4)}°`;
-        techMph.textContent = `${velMph.toLocaleString()} mph`;
-        techFootprint.textContent = `~${Math.round(iss.footprint).toLocaleString()} km`;
-
-        // 4. Reverse Geocode for Human-friendly Names
-        const loc = await getFriendlyLocation(currentLat, currentLon);
-        heroLocationName.textContent = loc.hero;
-        heroLocationSub.textContent = loc.sub;
-        cardTerritory.textContent = loc.card;
-        cardSurfaceType.textContent = loc.type;
-
-      } catch (err) {
-        console.warn("Update notice:", err);
+      } catch (e) {
+        console.warn("Poll failed", e);
       }
     }
 
-    /* =========================================================
-       USER INTERACTION HANDLERS
-       ========================================================= */
-
-    // Recenter map
+    // Recenter button
     btnRecenter.addEventListener("click", () => {
       if (currentLat !== 0 || currentLon !== 0) {
         map.setView([currentLat, currentLon], 4, { animate: true });
       }
     });
 
-    // Toggle Auto-Follow
-    btnFollow.addEventListener("click", () => {
-      autoFollow = !autoFollow;
-      if (autoFollow) {
-        btnFollow.innerHTML = `<span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span> Auto-Follow: ON`;
-        if (currentLat !== 0 || currentLon !== 0) {
-          map.panTo([currentLat, currentLon]);
-        }
-      } else {
-        btnFollow.innerHTML = `<span id="follow-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted);"></span> Auto-Follow: OFF`;
-      }
-    });
-
-    // Clear flight trail
-    btnClearPath.addEventListener("click", () => {
-      trailPoints.length = 0;
-      flightPath.setLatLngs([]);
-    });
-
-    // Toggle Technical Panel
-    toggleTech.addEventListener("click", () => {
-      const isOpen = techPanel.classList.toggle("open");
-      techArrow.textContent = isOpen ? "▲" : "▼";
-    });
-
-    // Run immediately and repeat every 3.5 seconds
-    updateTelemetry();
-    setInterval(updateTelemetry, 3500);
-
+    // Run
+    update();
+    setInterval(update, 3500);
   </script>
 </body>
 </html>
